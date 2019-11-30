@@ -6,6 +6,4 @@ const mochaConfig = async env => {
   return baseConfig
 }
 
-mochaConfig({})
-
 module.exports = mochaConfig
