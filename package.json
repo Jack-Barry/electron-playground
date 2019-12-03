@@ -5,8 +5,9 @@
   "scripts": {
     "webpack": "electron-webpack",
     "dev": "electron-webpack dev",
-    "test:e2e": "ts-mocha -p config/mocha/tsconfig.json spec/**/*.spec.ts",
+    "test:e2e": "npm run webpack && ts-mocha -p config/mocha/tsconfig.json spec/**/*.spec.ts",
     "test:unit": "mochapack --webpack-config config/mocha/webpack.config.js --require config/mocha/unit-setup.js \"src/**/*.spec.ts\"",
+    "test": "concurrently \"npm run test:unit -- --bail\" \"npm run test:e2e -- --bail\"",
     "dist": "npm run webpack && electron-builder -m"
   },
   "keywords": [],
@@ -16,6 +17,8 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.14",
     "@vue/test-utils": "^1.0.0-beta.30",
+    "concurrently": "^5.0.0",
+    "cross-env": "^6.0.3",
     "electron": "^7.1.2",
     "electron-builder": "^21.2.0",
     "electron-webpack": "^2.7.4",
@@ -24,7 +27,7 @@
     "jsdom": "^15.2.1",
     "jsdom-global": "^3.0.2",
     "mocha": "^6.2.2",
-    "mochapack": "^1.1.12",
+    "mochapack": "^1.1.13",
     "spectron": "^9.0.0",
     "ts-mocha": "^6.0.0",
     "typescript": "^3.7.2",

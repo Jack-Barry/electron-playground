@@ -4,6 +4,7 @@ import { format as formatUrl } from 'url'
 
 const pkg = require('./../../package.json')
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const isTest = process.env.NODE_ENV === 'test'
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow: BrowserWindow | null
@@ -20,8 +21,8 @@ function createMainWindow() {
     // minHeight: 850
   })
 
-  if (isDevelopment) {
-    // window.webContents.openDevTools()
+  if (isDevelopment && !isTest) {
+    window.webContents.openDevTools()
   }
 
   if (isDevelopment) {
@@ -93,4 +94,7 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   mainWindow = createMainWindow()
+  if (isDevelopment && !isTest) {
+    mainWindow.maximize()
+  }
 })
