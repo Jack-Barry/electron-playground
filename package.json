@@ -3,21 +3,30 @@
   "version": "1.0.0",
   "description": "A playground for POCs for electron projects",
   "scripts": {
-    "webpack": "electron-webpack",
-    "dev": "electron-webpack dev",
-    "test:e2e": "npm run webpack && ts-mocha -p config/mocha/tsconfig.json spec/**/*.spec.ts",
-    "test:unit": "mochapack --webpack-config config/mocha/webpack.config.js --require config/mocha/unit-setup.js \"src/**/*.spec.ts\"",
-    "test": "concurrently \"npm run test:unit -- --bail\" \"npm run test:e2e -- --bail\"",
-    "dist": "npm run webpack && electron-builder -m"
+    "build:noenv": "electron-webpack",
+    "build": "cross-env ELECTRON_WEBPACK_APP_ENV=production npm run build:noenv",
+    "dev": "cross-env ELECTRON_WEBPACK_APP_ENV=development electron-webpack dev",
+    "app:nobuild": "electron dist/main/main.js",
+    "app": "cross-env ELECTRON_WEBPACK_APP_ENV=preview npm run build:noenv && npm run app:nobuild",
+    "test:e2e": "cross-env ELECTRON_WEBPACK_APP_ENV=test npm run build && ts-mocha -p config/mocha/tsconfig.json --config config/mocha/config.e2e.js --bail spec/**/*.spec.ts",
+    "test:unit": "mochapack --webpack-config config/mocha/webpack.config.js --require config/mocha/config.unit.js --quiet \"src/**/*.spec.ts\"",
+    "test:unit:watch": "npm run test:unit -- --watch",
+    "test:all": "concurrently \"npm run test:unit -- --bail\" \"npm run test:e2e\"",
+    "dist": "cross-env ELECTRON_WEBPACK_APP_IS_BUILT=true npm run build && electron-builder",
+    "dist:mac": "npm run dist -- -m",
+    "dist:win": "npm run dist -- -w --x64"
   },
   "keywords": [],
   "author": "Jack Barry",
   "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^4.2.6",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.14",
     "@vue/test-utils": "^1.0.0-beta.30",
+    "chai": "^4.2.0",
     "concurrently": "^5.0.0",
+    "cross-env": "^6.0.3",
     "electron": "^7.1.2",
     "electron-builder": "^21.2.0",
     "electron-webpack": "^2.7.4",
@@ -37,11 +46,25 @@
   "dependencies": {
     "source-map-support": "^0.5.16"
   },
+  "electronWebpack": {
+    "whiteListedModules": [
+      "vue"
+    ]
+  },
   "build": {
     "appId": "com.electron.playground",
     "productName": "Electron Playground",
     "directories": {
-      "output": "builds"
+      "output": "build",
+      "buildResources": "static"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "artifactName": "${productName} Installer v${version}.${ext}",
+      "createDesktopShortcut": false,
+      "installerIcon": "./static/installer.ico"
     }
   }
 }

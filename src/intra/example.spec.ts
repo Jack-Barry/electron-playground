@@ -1,8 +1,8 @@
-import * as assert from 'assert'
+import { expect } from 'chai'
 import { blah } from '.'
 
 describe(`intra`, () => {
-  it('does things too', () => {
-    assert.equal(blah, 'blah')
+  it('does things', () => {
+    expect(blah).to.eql('blah')
   })
 })

@@ -3,34 +3,50 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 
 const pkg = require('./../../package.json')
-const isDevelopment = process.env.NODE_ENV !== 'production'
-const isTest = process.env.NODE_ENV === 'test'
+const env = process.env.ELECTRON_WEBPACK_APP_ENV
+const isBuilt = process.env.ELECTRON_WEBPACK_APP_IS_BUILT || false
+const isProduction = env === 'production'
+const isPreview = env === 'preview'
+const isTest = env === 'test'
+const isDevelopment = !isProduction && !isPreview && !isTest
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow: BrowserWindow | null
 
-function createMainWindow() {
+const createMainWindow = () => {
   const window = new BrowserWindow({
     title: pkg.build.productName,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false
-    }
-    // minWidth: 1000,
-    // minHeight: 850
+      nodeIntegration: true
+      // webSecurity: false
+    },
+    minWidth: 1000,
+    minHeight: 850,
+    x: 0,
+    y: 0
   })
 
-  if (isDevelopment && !isTest) {
-    window.webContents.openDevTools()
+  if (isDevelopment) {
+    process.nextTick(() => {
+      window.webContents.openDevTools()
+    })
+    window.webContents.on('devtools-opened', () => {
+      window.focus()
+      setImmediate(() => {
+        window.focus()
+      })
+    })
   }
 
   if (isDevelopment) {
     window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
+    let indexPath = 'index.html'
+    if (!isBuilt) indexPath = `../renderer/${indexPath}`
     window.loadURL(
       formatUrl({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(__dirname, indexPath),
         protocol: 'file',
         slashes: true
       })
@@ -38,18 +54,12 @@ function createMainWindow() {
   }
 
   window.once('ready-to-show', () => {
+    if (isProduction || isPreview || isTest) window.removeMenu()
     window.show()
   })
 
   window.on('closed', () => {
     mainWindow = null
-  })
-
-  window.webContents.on('devtools-opened', () => {
-    window.focus()
-    setImmediate(() => {
-      window.focus()
-    })
   })
 
   return window
@@ -94,7 +104,7 @@ app.on('activate', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   mainWindow = createMainWindow()
-  if (isDevelopment && !isTest) {
+  if (isDevelopment) {
     mainWindow.maximize()
   }
 })

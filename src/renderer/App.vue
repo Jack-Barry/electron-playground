@@ -1,5 +1,7 @@
 <template>
-  <h1>Hello world!!</h1>
+  <div id="root">
+    <h1>Welcome to the Electron Playground</h1>
+  </div>
 </template>
 
 <script lang="ts">

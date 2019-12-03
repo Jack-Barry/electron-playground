@@ -1,10 +1,12 @@
-import * as assert from 'assert'
+import { expect } from 'chai'
 import { mount } from '@vue/test-utils'
 import App from './App.vue'
 
 describe(`App`, () => {
-  it('does things', () => {
+  it('renders the root div', () => {
     const app = mount(App)
-    assert.equal(app.exists(), true)
+    const rootElement = app.find('#root')
+    expect(rootElement).to.exist
+    expect(rootElement.is('div')).to.eq(true)
   })
 })

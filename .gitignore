@@ -81,4 +81,4 @@ typings/
 
 # Project Specifics
 dist/
-builds/
+build/
