@@ -1,3 +1,5 @@
+import { ipcRenderer } from 'electron'
+
 /**
  * Signals provided to initiate an instance of a `FrontendMessenger`
  */
@@ -44,5 +46,15 @@ export class FrontendMessenger {
       ...signals,
       error: signals.error || `FAILED_TO_${signals.initiate}`
     }
+  }
+
+  /**
+   * Initiates the request for processing cycle
+   *
+   * @param args Arguments to pass along with the initiator signal string to
+   *   ipcMain
+   */
+  send(...args: any[]): void {
+    ipcRenderer.send(this.signals.initiate, args)
   }
 }

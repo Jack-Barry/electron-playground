@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { FrontendMessenger, IFrontendMessengerSignals } from '.'
+import { ipcMain } from 'electron'
 
 describe(FrontendMessenger.name, () => {
   let fmSignals: IFrontendMessengerSignals
@@ -14,11 +15,9 @@ describe(FrontendMessenger.name, () => {
   describe('.constructor()', () => {
     describe('when an error signal is provided', () => {
       it('assigns the provided error signal', () => {
-        const fm = new FrontendMessenger({
-          ...fmSignals,
-          error: 'ERROR_ATTEMPTING_TO_DO_THIS'
-        })
-        expect(fm.signals.error).to.eql('ERROR_ATTEMPTING_TO_DO_THIS')
+        const error = 'ERROR_ATTEMPTING_TO_DO_THIS'
+        const fm = new FrontendMessenger({ ...fmSignals, error })
+        expect(fm.signals.error).to.eql(error)
       })
     })
 
@@ -30,7 +29,14 @@ describe(FrontendMessenger.name, () => {
     })
   })
 
-  describe('.initiateAction()', () => {
-    xit('sends the initiate signal from ipcRenderer', () => {})
+  describe('.send()', () => {
+    it('sends the initiate signal from ipcRenderer', done => {
+      const fm = new FrontendMessenger(fmSignals)
+      fm.send()
+      ipcMain.on(fm.signals.initiate, () => {
+        expect(true).to.eq(true)
+        done()
+      })
+    })
   })
 })
