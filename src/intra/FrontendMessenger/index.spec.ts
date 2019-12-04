@@ -29,4 +29,8 @@ describe(FrontendMessenger.name, () => {
       })
     })
   })
+
+  describe('.initiateAction()', () => {
+    xit('sends the initiate signal from ipcRenderer', () => {})
+  })
 })
