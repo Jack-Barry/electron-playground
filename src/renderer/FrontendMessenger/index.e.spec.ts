@@ -1,6 +1,5 @@
 import { expect } from 'chai'
 import { FrontendMessenger, IFrontendMessengerSignals } from '.'
-import { ipcMain } from 'electron'
 
 describe(FrontendMessenger.name, () => {
   let fmSignals: IFrontendMessengerSignals
@@ -25,17 +24,6 @@ describe(FrontendMessenger.name, () => {
       it('assigns a default error signal based on the initiator signal', () => {
         const fm = new FrontendMessenger(fmSignals)
         expect(fm.signals.error).to.eql('FAILED_TO_DO_THIS')
-      })
-    })
-  })
-
-  describe('.send()', () => {
-    it('sends the initiate signal from ipcRenderer', done => {
-      const fm = new FrontendMessenger(fmSignals)
-      fm.send()
-      ipcMain.on(fm.signals.initiate, () => {
-        expect(true).to.eq(true)
-        done()
       })
     })
   })

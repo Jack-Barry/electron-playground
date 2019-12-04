@@ -70,27 +70,27 @@ to `dist` so that the test app is run against the distributable JS.
 ELECTRON_WEBPACK_APP_ENV: 'test'
 ```
 
-##### `test:unit`
+##### `test:main`
 
-Runs tests nested within the `src` folder, which are intended for
-testing modular units of code. This uses webpack under the hood to test
-`.ts` and `.vue` files in the source code, but does _not_ write anything
-to `dist`.
+Runs tests nested within the `src/main` folder marked as `.e.spec.ts`,
+which are intended for testing modular units of code that rely on
+`electron`.
 
-You may want to run `test:unit:watch` while developing, as it will watch
-for changes while you code.
+##### `test:renderer`
 
-```ts
-ELECTRON_WEBPACK_APP_ENV: 'test'
-```
+Runs tests nested within the `src/renderer` folder marked as
+`.e.spec.ts`, which are intended for testing modular units of code that
+rely on `electron`.
+
+##### `test:bundle`
+
+Runs tests nested within the `src` folder marked as `.w.spec.ts`, which
+are intended for testing modular units of code that do not rely on
+`electron` but do require `webpack` to be tested.
 
 ##### `test:all`
 
-Runs all tests under `spec` and `src` concurrently.
-
-```ts
-ELECTRON_WEBPACK_APP_ENV: 'test'
-```
+Runs all tests (e2e, main, renderer, and bundle) concurrently.
 
 #### `dist`
 
