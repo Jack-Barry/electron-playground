@@ -116,7 +116,6 @@ These scripts are used to package the app per specific OS.
 | `dist`         | Webpacked distributable JS                                       |
 | `spec`         | e2e tests and setup files                                        |
 | `src`          | Source code and unit test files                                  |
-| `src/intra`    | Code that can be shared between the frontend and backend         |
 | `src/main`     | Backend code                                                     |
 | `src/renderer` | Frontend code                                                    |
 | `static`       | Assets that can be used by the app, such as favicon and images   |
