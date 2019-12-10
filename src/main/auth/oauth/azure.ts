@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { azureConfig } from '../../../constants'
 import { OAuthTools } from './OAuthTools'
 import { Event } from 'electron'
@@ -21,16 +21,26 @@ export const azureOAuth = new OAuthTools({
 const graphRequest = async (
   event: Event,
   signal: string,
-  path: string
+  path: string,
+  dataTransformer: (data: any) => any = data => data,
+  responseType?: 'arraybuffer'
 ): Promise<void> => {
   const accessToken = await azureOAuth.retrieveAccessToken()
-  const response = await axios.get(`${graphUrlBase}/${path}`, {
+  let requestConfig: AxiosRequestConfig = {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
-  })
+  }
+  requestConfig.responseType = responseType
+
+  const response = await axios.get(`${graphUrlBase}/${path}`, requestConfig)
   // @ts-ignore
-  event.sender.send(signal, response.data)
+  event.sender.send(signal, dataTransformer(response.data))
+}
+
+const makeImgSrcFromBinary = (binary: string) => {
+  const b64 = Buffer.from(binary, 'binary').toString('base64')
+  return `data:image/jpeg;base64, ${b64}`
 }
 
 export const getUserData = async (event: Event): Promise<void> => {
@@ -38,15 +48,11 @@ export const getUserData = async (event: Event): Promise<void> => {
 }
 
 export const getUserImage = async (event: Event): Promise<void> => {
-  const accessToken = await azureOAuth.retrieveAccessToken()
-  const response = await axios.get(`${graphUrlBase}/me/photos/120x120/$value`, {
-    responseType: 'arraybuffer',
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-  const b64 = Buffer.from(response.data, 'binary').toString('base64')
-  const src = `data:image/jpeg;base64, ${b64}`
-  // @ts-ignore
-  event.sender.send('USER_IMAGE_RETRIEVED', src)
+  await graphRequest(
+    event,
+    'USER_IMAGE_RETRIEVED',
+    'me/photos/120x120/$value',
+    makeImgSrcFromBinary,
+    'arraybuffer'
+  )
 }
