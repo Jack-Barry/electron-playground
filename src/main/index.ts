@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { constants } from '../constants'
-import { authenticateMe, deAuthenticateMe } from './auth'
+import { azureOAuth, getUserData, getUserImage } from './auth/oauth/azure'
 
 const env = process.env.ELECTRON_WEBPACK_APP_ENV
 const isBuilt = process.env.ELECTRON_WEBPACK_APP_IS_BUILT || false
@@ -110,5 +110,7 @@ app.on('ready', () => {
   }
 })
 
-ipcMain.on('AUTHENTICATE_ME', authenticateMe)
-ipcMain.on('DEAUTHENTICATE_ME', deAuthenticateMe)
+ipcMain.on('LOGIN_WITH_AZURE', azureOAuth.logIn)
+ipcMain.on('GET_USER_DATA', getUserData)
+ipcMain.on('GET_USER_IMAGE', getUserImage)
+ipcMain.on('LOGOUT_WITH_AZURE', azureOAuth.logOut)
