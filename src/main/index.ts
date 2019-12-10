@@ -1,8 +1,9 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
+import { constants } from '../constants'
+import { authenticateMe, deAuthenticateMe } from './auth'
 
-const pkg = require('./../../package.json')
 const env = process.env.ELECTRON_WEBPACK_APP_ENV
 const isBuilt = process.env.ELECTRON_WEBPACK_APP_IS_BUILT || false
 const isProduction = env === 'production'
@@ -15,7 +16,7 @@ let mainWindow: BrowserWindow | null
 
 const createMainWindow = () => {
   const window = new BrowserWindow({
-    title: pkg.build.productName,
+    title: constants.appName,
     show: false,
     webPreferences: {
       nodeIntegration: true
@@ -108,3 +109,6 @@ app.on('ready', () => {
     mainWindow.maximize()
   }
 })
+
+ipcMain.on('AUTHENTICATE_ME', authenticateMe)
+ipcMain.on('DEAUTHENTICATE_ME', deAuthenticateMe)
